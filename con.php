@@ -99,7 +99,7 @@ function post_url() {
 
 function get_url($encrypted_data, $time) {
     if(!$time || (time() - $time > 15)) {
-        set_response_code(403, "Bad Request");
+        set_response_code(403, "Forbidden");
         echo "URL expired.";
         return;
     }
@@ -108,7 +108,7 @@ function get_url($encrypted_data, $time) {
             $encrypted_data), true);
 
     if($data === NULL) {
-        set_response_code(403, "Bad Request");
+        set_response_code(403, "Forbidden");
         echo "Incorrect key";
         return;
     }
