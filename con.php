@@ -60,16 +60,7 @@ function decrypt($key, $str) {
     return $decrypted;
 }
 
-function post_url() {
-    $cookies = array_items($_COOKIE);
-    $time = time();
-    $data = json_decode(get_request_body(), true);
-
-    if($data === NULL) {
-        set_response_code(400, "Bad Request");
-        return "Incorrect data";
-    }
-
+function save_cookies($data, $cookies) {
     if(array_key_exists("client", $data)) 
         $client_str = $data["client"];
     else
@@ -85,16 +76,32 @@ function post_url() {
         $data["httponly"][] = $cookie;
     }
 
+    return $data;
+}
+
+function post_url() {
+    $time = time();
+    $data = json_decode(get_request_body(), true);
+
+    if($data === NULL) {
+        set_response_code(400, "Bad Request");
+        echo "Incorrect data";
+        return;
+    }
+
+    $data = save_cookies($data, array_items($_COOKIE));
+
     $encrypted = encrypt(SECRET_KEY.$time,
         json_encode($data));
 
-    return json_encode('?text='.urlencode($encrypted).'&t='.$time);
+    echo json_encode('?text='.urlencode($encrypted).'&t='.$time);
 }
 
 function get_url($encrypted_data, $time) {
     if(!$time || (time() - $time > 15)) {
         set_response_code(403, "Bad Request");
-        return "URL expired.";
+        echo "URL expired.";
+        return;
     }
 
     $data = json_decode(decrypt(SECRET_KEY.$time,
@@ -102,11 +109,9 @@ function get_url($encrypted_data, $time) {
 
     if($data === NULL) {
         set_response_code(403, "Bad Request");
-        return "Incorrect key";
+        echo "Incorrect key";
+        return;
     }
-
-    print_r($data["client"]);
-    print_r($data["httponly"]);
 
     header("Location: ".$data["url"]);
     foreach($data["client"] as $cookie) {
@@ -128,9 +133,9 @@ if(!count(debug_backtrace())) {
         } else {
             $time = NULL;
         }
-        echo(get_url($_GET["text"], $time));
+        get_url($_GET["text"], $time);
     } else {
-        echo(post_url());
+        post_url();
     }
 }
 

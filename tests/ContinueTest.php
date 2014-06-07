@@ -32,6 +32,22 @@ class ContinueTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(get_cookies(""), array());
         $this->assertEquals(get_cookies("0"), array(array("", "0")));
     }
+
+    public function testSaveCookies()
+    {
+        $payload = array('client' => 
+            'key1=value1; key2=value_from_payload; key3=some_key',
+            'other_key' => 'value');
+        $cookies = array(array('key2', 'value_from_header'), array('key3', 'some_key'));
+
+        $data = save_cookies($payload, $cookies);
+
+        $this->assertFalse(array_key_exists('key3', $data["httponly"]));
+        $this->assertContains(array("key3", "some_key"), $data["client"]);
+        $this->assertEquals($data["other_key"], "value");
+        $this->assertContains(array("key2", "value_from_header"), $data["httponly"]);
+        $this->assertContains(array("key1", "value1"), $data["client"]);
+    }
 };
 
 ?>
