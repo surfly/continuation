@@ -27,16 +27,16 @@ def post_url():
     decrypted = aes.decrypt(encrypted)
     assert decrypted == json.dumps(data)
 
-    return json.dumps(encrypted + '?t=' + t)
+    return json.dumps('?t=' + t + '&text=' + encrypted)
 
-@app.route('/url/<url>', methods=['GET'])
-def get_url(url):
+@app.route('/url', methods=['GET'])
+def get_url():
     t = request.args.get('t')
     if (not t or (time.time() - float(t)) > 15):
         return "URL expired.", 403
     try:
         aes = AESCipher(app.secret_key+t)
-        decrypted = aes.decrypt(str(url))
+        decrypted = aes.decrypt(str(request.args.get('text')))
         obj = json.loads(decrypted)
     except:
         return "Incorrect key", 403
