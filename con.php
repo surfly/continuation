@@ -35,6 +35,8 @@ function get_key_value($cookiestr) {
 }
 
 function get_cookies($cookiestr) {
+    if($cookiestr === "") return array();
+
     $cookies = array();
 
     foreach(explode(';', $cookiestr) as $cookie) {

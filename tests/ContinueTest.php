@@ -29,6 +29,8 @@ class ContinueTest extends PHPUnit_Framework_TestCase {
                 array("key2", "value2"),
                 array("key3", "value3")
             ));
+        $this->assertEquals(get_cookies(""), array());
+        $this->assertEquals(get_cookies("0"), array(array("", "0")));
     }
 };
 
