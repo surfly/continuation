@@ -2,8 +2,8 @@ import json
 import requests
 import unittest
 
-url = "http://localhost:5000/url"
-#url = "http://10.0.0.3/~michal/con/con.php"
+#url = "http://localhost:5000/url"
+url = "http://10.0.0.3/~michal/con/con.php"
 
 class TestContinuation(unittest.TestCase):
 
