@@ -1,6 +1,8 @@
 <?php
 
 define('SECRET_KEY', 's');
+define('SECRET_16_CHARS', 'deepheemae5eeGh5');
+define('ENCRYPTION_METHOD', "AES-256-CBC");
 
 # http://www.php.net/manual/en/function.http-get-request-body.php#77305
 function get_request_body() {
@@ -67,11 +69,25 @@ function get_cookies($cookiestr) {
 }
 
 function encrypt($key, $str) {
+    //$urlencode(//openssl_encrypt($str, ENCRYPTION_METHOD,
+    // SECRET_KEY+$key_append, 0, SECRET_16_CHARS));
+    //    $str
+    //);
+
+    $encrypted = $str;
+    $encoded = urlencode($encrypted);
     return $str;
 }
 
 function decrypt($key, $str) {
-    return $str;
+    //return urldecode(//openssl_decrypt($str, ENCRYPTION_METHOD,
+    //    SECRET_KEY+$key_append, 0, SECRET_16_CHARS));
+    //    $str
+    //);
+    $decoded = urldecode($str);
+    $decrypted = $decoded;
+
+    return $decrypted;
 }
 
 function post_url() {
@@ -111,7 +127,7 @@ function get_url($encrypted_data, $time) {
         return "URL expired.";
     }
 
-    $data = json_decode(decrypt(SECRET_KEY+$time,
+    $data = json_decode(decrypt(SECRET_KEY.$time,
             $encrypted_data), true);
 
     if($data === NULL) {
