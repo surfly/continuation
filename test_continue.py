@@ -47,6 +47,7 @@ class TestContinuation(unittest.TestCase):
         print(new_postfix)
         r = requests.get(url + '?' + new_postfix, allow_redirects=False)
         self.assertEqual(r.status_code, 403)
+        self.assertEqual(r.text, 'Incorrect key')
 
     def test_correct_cookies(self):
         payload = {'client': 'key=value', 'url':'/'}
