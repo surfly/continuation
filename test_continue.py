@@ -1,6 +1,7 @@
 import json
 import requests
 import unittest
+import time
 
 #url = "http://localhost:5000/url"
 url = "http://10.0.0.3/~michal/con/con.php"
@@ -22,11 +23,30 @@ class TestContinuation(unittest.TestCase):
         self.assertEqual(r.text, "URL expired.")
         self.assertEqual(r.status_code, 403)
 
+    def test_expired_get(self):
+        # be sure that the clocks are synchronized
+        cur_time = str(time.time()-120)
+        r = requests.get(url + "?text=Oota7ood&t=" + cur_time)
+        self.assertEqual(r.text, "URL expired.")
+        self.assertEqual(r.status_code, 403)
+
     def test_correct_get(self):
         payload = {'client': 'key=value', 'url':'/'}
         r = requests.post(url, data=json.dumps(payload))
         r = requests.get(url + json.loads(r.text), allow_redirects=False)
         self.assertEqual(r.status_code, 302)
+
+    def test_incorrect_key_get(self):
+        payload = {'client': 'key=value', 'url':'/'}
+        r = requests.post(url, data=json.dumps(payload))
+        postfix = json.loads(r.text)[1:]
+        args = postfix.split('&')
+        new_args = [ 'text=badmsg' if s.startswith('text=') else s \
+            for s in args]
+        new_postfix = '&'.join(new_args)
+        print(new_postfix)
+        r = requests.get(url + '?' + new_postfix, allow_redirects=False)
+        self.assertEqual(r.status_code, 403)
 
     def test_correct_cookies(self):
         payload = {'client': 'key=value', 'url':'/'}
