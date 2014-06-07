@@ -15,6 +15,8 @@ class ContinueTest extends PHPUnit_Framework_TestCase {
 
     public function testGetKeyValue()
     {
+        $this->assertEquals(get_key_value("asdf"), array("", "asdf"));
+        $this->assertEquals(get_key_value("basic=example"), array("basic", "example"));
         $this->assertEquals(get_key_value("key=value=value"), array("key", "value=value"));
         $this->assertEquals(get_key_value("=value=value"), array("", "value=value"));
     }
