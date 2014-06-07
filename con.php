@@ -144,15 +144,18 @@ function get_url($encrypted_data, $time) {
     }
 }
 
-if(array_key_exists("text", $_GET)) {
-    if(array_key_exists("t", $_GET)) {
-        $time = $_GET["t"];
+# http://stackoverflow.com/questions/2413991/php-equivalent-of-pythons-name-main
+if(!count(debug_backtrace())) {
+    if(array_key_exists("text", $_GET)) {
+        if(array_key_exists("t", $_GET)) {
+            $time = $_GET["t"];
+        } else {
+            $time = NULL;
+        }
+        echo(get_url($_GET["text"], $time));
     } else {
-        $time = NULL;
+        echo(post_url());
     }
-    echo(get_url($_GET["text"], $time));
-} else {
-    echo(post_url());
 }
 
 ?>
