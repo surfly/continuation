@@ -16,30 +16,6 @@ function set_response_code($code, $text) {
     header($protocol . ' ' . $code . ' ' . $text);
 }
 
-# http://www.php.net/manual/en/function.http-parse-cookie.php#74810
-function cookie_parse( $str ) {
-    $cookies = array();
-
-    $csplit = explode( ';', $str );
-    $cdata = array();
-    foreach( $csplit as $data ) {
-        $cinfo = explode( '=', $data );
-        $cinfo[0] = trim( $cinfo[0] );
-        if( $cinfo[0] == 'expires' ) $cinfo[1] = strtotime( $cinfo[1] );
-        if( $cinfo[0] == 'secure' ) $cinfo[1] = "true";
-        if( in_array( $cinfo[0], array( 'domain', 'expires', 'path', 'secure', 'comment' ) ) ) {
-            $cdata[trim( $cinfo[0] )] = $cinfo[1];
-        }
-        else {
-            $cdata['value']['key'] = $cinfo[0];
-            $cdata['value']['value'] = $cinfo[1];
-        }
-    }
-    $cookies[] = $cdata;
-
-    return $cookies;
-}
-
 function array_items($tab) {
     $items = array();
     foreach($tab as $key=>$value) {
