@@ -3,6 +3,16 @@
 require_once("con.php");
 
 class ContinueTest extends PHPUnit_Framework_TestCase {
+    public function testEncryption()
+    {
+        $str = "my string";
+        $key = "my key";
+
+        $encrypted = encrypt($key, $str);
+        $decrypted = decrypt($key, $encrypted);
+        $this->assertEquals($decrypted, $str);
+    }
+
     public function testGetKeyValue()
     {
         $this->assertEquals(get_key_value("key=value=value"), array("key", "value=value"));

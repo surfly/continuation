@@ -72,12 +72,10 @@ function encrypt($key, $str) {
     $encrypted = openssl_encrypt($str, ENCRYPTION_METHOD,
         $key, 0, SECRET_16_CHARS);
 
-    $encoded = urlencode($encrypted);
-    return $encoded;
+    return $encrypted;
 }
 
 function decrypt($key, $str) {
-    $decoded = urldecode($str);
     $decrypted = openssl_decrypt($str, ENCRYPTION_METHOD,
         $key, 0, SECRET_16_CHARS);
 
@@ -112,7 +110,7 @@ function post_url() {
     $encrypted = encrypt(SECRET_KEY.$time,
         json_encode($data));
 
-    return json_encode('?text='.$encrypted.'&t='.$time);
+    return json_encode('?text='.urlencode($encrypted).'&t='.$time);
 }
 
 function get_url($encrypted_data, $time) {
