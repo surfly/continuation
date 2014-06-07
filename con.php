@@ -102,13 +102,39 @@ function post_url() {
     $encrypted = encrypt(SECRET_KEY.$time,
         json_encode($data));
 
-    return json_encode($encrypted.'?t='.$time);
+    return json_encode('?text='.$encrypted.'&t='.$time);
 }
 
-function get_url() {
+function get_url($encrypted_data, $time) {
+    // skip checking time now
 
+    $data = json_decode(decrypt(SECRET_KEY+$time,
+            $encrypted_data), true);
+
+    if($data === NULL) {
+        set_response_code(400, "Bad Request");
+        return "Incorrect key";
+    }
+
+    print_r($data["client"]);
+    print_r($data["httponly"]);
+
+    header("Location: ".$data["url"]);
+    foreach($data["client"] as $cookie) {
+        list($key, $value) = $cookie;
+        setcookie($key, $value);
+    }
+
+    foreach($data["httponly"] as $cookie) {
+        list($key, $value) = $cookie;
+        setcookie($key, $value, 0, "", "", "", true);
+    }
 }
 
-echo(post_url());
+if(array_key_exists("text", $_GET)) {
+    echo(get_url($_GET["text"], time()));
+} else {
+    echo(post_url());
+}
 
 ?>
