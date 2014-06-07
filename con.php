@@ -69,23 +69,17 @@ function get_cookies($cookiestr) {
 }
 
 function encrypt($key, $str) {
-    //$urlencode(//openssl_encrypt($str, ENCRYPTION_METHOD,
-    // SECRET_KEY+$key_append, 0, SECRET_16_CHARS));
-    //    $str
-    //);
+    $encrypted = openssl_encrypt($str, ENCRYPTION_METHOD,
+        $key, 0, SECRET_16_CHARS);
 
-    $encrypted = $str;
     $encoded = urlencode($encrypted);
-    return $str;
+    return $encoded;
 }
 
 function decrypt($key, $str) {
-    //return urldecode(//openssl_decrypt($str, ENCRYPTION_METHOD,
-    //    SECRET_KEY+$key_append, 0, SECRET_16_CHARS));
-    //    $str
-    //);
     $decoded = urldecode($str);
-    $decrypted = $decoded;
+    $decrypted = openssl_decrypt($str, ENCRYPTION_METHOD,
+        $key, 0, SECRET_16_CHARS);
 
     return $decrypted;
 }
