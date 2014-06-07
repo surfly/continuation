@@ -106,13 +106,16 @@ function post_url() {
 }
 
 function get_url($encrypted_data, $time) {
-    // skip checking time now
+    if(!$time || (time() - $time > 15)) {
+        set_response_code(403, "Bad Request");
+        return "URL expired.";
+    }
 
     $data = json_decode(decrypt(SECRET_KEY+$time,
             $encrypted_data), true);
 
     if($data === NULL) {
-        set_response_code(400, "Bad Request");
+        set_response_code(403, "Bad Request");
         return "Incorrect key";
     }
 
@@ -132,7 +135,12 @@ function get_url($encrypted_data, $time) {
 }
 
 if(array_key_exists("text", $_GET)) {
-    echo(get_url($_GET["text"], time()));
+    if(array_key_exists("t", $_GET)) {
+        $time = $_GET["t"];
+    } else {
+        $time = NULL;
+    }
+    echo(get_url($_GET["text"], $time));
 } else {
     echo(post_url());
 }
