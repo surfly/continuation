@@ -3,6 +3,18 @@
 require_once("con.php");
 
 class ContinueTest extends PHPUnit_Framework_TestCase {
+    public function setUp()
+    {
+        $this->db = new PDO("sqlite::memory:");
+        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        create_table($this->db);
+    }
+    public function testCreateTable()
+    {
+        $res = $this->db->query('SELECT * FROM '.DB_TABLE);
+        $this->assertSame($res->rowCount(), 0);
+    }
+
     public function testEncryption()
     {
         $str = "my string";

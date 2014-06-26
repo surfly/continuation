@@ -3,6 +3,8 @@
 define('SECRET_KEY', 's');
 define('SECRET_16_CHARS', 'deepheemae5eeGh5');
 define('ENCRYPTION_METHOD', "AES-256-CBC");
+define('DB_FILENAME', 'path-to-db');
+define('DB_TABLE', 'continue');
 
 # http://www.php.net/manual/en/function.http-get-request-body.php#77305
 function get_request_body() {
@@ -22,6 +24,13 @@ function array_items($tab) {
         $items[] = array($key, $value);
     }
     return $items;
+}
+
+function create_table($db) {
+    $db->exec('CREATE TABLE '.DB_TABLE.' ('
+        .'shortcut VARCHAR(10), '
+        .'link TEXT, '
+        .'creation_time DATETIME)');
 }
 
 function get_key_value($cookiestr) {
