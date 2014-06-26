@@ -75,20 +75,6 @@ function get_cookies($cookiestr) {
     return $cookies;
 }
 
-function encrypt($key, $str) {
-    $encrypted = openssl_encrypt($str, ENCRYPTION_METHOD,
-        $key, 0, SECRET_16_CHARS);
-
-    return $encrypted;
-}
-
-function decrypt($key, $str) {
-    $decrypted = openssl_decrypt($str, ENCRYPTION_METHOD,
-        $key, 0, SECRET_16_CHARS);
-
-    return $decrypted;
-}
-
 function save_cookies($data, $cookies) {
     if(array_key_exists("client", $data)) 
         $client_str = $data["client"];

@@ -15,16 +15,6 @@ class ContinueTest extends PHPUnit_Framework_TestCase {
         $this->assertSame($res->rowCount(), 0);
     }
 
-    public function testEncryption()
-    {
-        $str = "my string";
-        $key = "my key";
-
-        $encrypted = encrypt($key, $str);
-        $decrypted = decrypt($key, $encrypted);
-        $this->assertEquals($decrypted, $str);
-    }
-
     public function testGetKeyValue()
     {
         $this->assertEquals(get_key_value("asdf"), array("", "asdf"));
