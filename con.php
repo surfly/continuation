@@ -53,6 +53,13 @@ function retrieve_url($db, $shortcut) {
     return $stmt->fetch(PDO::FETCH_NUM);
 }
 
+function delete_url($db, $shortcut) {
+    $query = 'DELETE FROM '.DB_TABLE.' WHERE '
+        .'shortcut=?';
+    $stmt = $db->prepare($query);
+    $stmt->execute(array($shortcut));
+}
+
 function get_key_value($cookiestr) {
     $tab = explode('=', $cookiestr, 2);
     if(count($tab) == 2) {

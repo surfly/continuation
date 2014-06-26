@@ -76,6 +76,15 @@ class ContinueTest extends PHPUnit_Framework_TestCase {
         list($url, $time) = retrieve_url($this->db, 'red');
         $this->assertSame($url, Null);
     }
+
+    public function testDeleteUrl()
+    {
+        $this->db->exec('INSERT INTO '.DB_TABLE
+            .' VALUES ("green", "apple", time())');
+        delete_url($this->db, "green");
+        $stmt = $this->db->query('SELECT * FROM '.DB_TABLE);
+        $this->assertSame(count($stmt->fetchAll()), 0);
+    }
 };
 
 ?>
