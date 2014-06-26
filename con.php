@@ -123,6 +123,7 @@ function post_url($db) {
 
 function get_url($db, $shortcut) {
     list($json_data, $time) = retrieve_url($db, $shortcut);
+    delete_url($db, $shortcut);
 
     if($json_data === NULL) {
         set_response_code(403, "Forbidden");

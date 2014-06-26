@@ -52,5 +52,16 @@ class TestContinuation(unittest.TestCase):
         cookies = sorted([(cookie.name, cookie.value) for cookie in r.cookies])
         self.assertEqual(cookies, [('flavour', 'chocolate'), ('key', 'value'), ('session', 'eyJ1c2VybmFtZSI6Im1pcmphbSJ9.BnJ10A.VSuoI0CLPpDDbundvRuaP2v-9OM')])
 
+    def test_delete_key(self):
+        payload = {'client': 'key=value', 'url': '/some_url'}
+        r = requests.post(url, data=json.dumps(payload))
+        suffix = json.loads(r.text)
+        self.assertEqual(r.status_code, 200)
+        r = requests.get(url + suffix, allow_redirects=False)
+        self.assertEqual(r.status_code, 302)
+        r = requests.get(url + suffix, allow_redirects=False)
+        self.assertEqual(r.status_code, 403)
+        self.assertEqual(r.text, 'Incorrect key')
+
 if __name__ == '__main__':
     unittest.main()
