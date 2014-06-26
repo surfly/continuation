@@ -54,9 +54,15 @@ class ContinueTest extends PHPUnit_Framework_TestCase {
     public function testSaveUrl()
     {
         save_url($this->db, "green", "apple", time());
-        $count = 0;
         $stmt = $this->db->query('SELECT * FROM '.DB_TABLE);
         $this->assertSame(count($stmt->fetchAll()), 1);
+    }
+
+    public function testSaveUrlUniqueness() 
+    {
+        save_url($this->db, "green", "apple", time());
+        $this->setExpectedException("PDOException");
+        save_url($this->db, "green", "apple", time());
     }
 
     public function testRetrieveUrl()

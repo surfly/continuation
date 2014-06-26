@@ -28,7 +28,7 @@ function array_items($tab) {
 
 function create_table($db) {
     $db->exec('CREATE TABLE IF NOT EXISTS '.DB_TABLE.' ('
-        .'shortcut VARCHAR(10), '
+        .'shortcut VARCHAR(10) unique primary key, '
         .'url TEXT, '
         .'creation_time DATETIME)');
 }
