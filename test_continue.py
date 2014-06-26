@@ -30,6 +30,14 @@ class TestContinuation(unittest.TestCase):
         r = requests.get(url + json.loads(r.text), allow_redirects=False)
         self.assertEqual(r.status_code, 302)
 
+    def test_long_url(self):
+        redir_url = 'http://'+'long.url/'*1000
+        payload = {'client': 'key=value', 'url': redir_url}
+        r = requests.post(url, data=json.dumps(payload))
+        r = requests.get(url + json.loads(r.text), allow_redirects=False)
+        self.assertEqual(r.headers['location'], redir_url)
+        self.assertEqual(r.status_code, 302)
+
     def test_incorrect_key_get(self):
         payload = {'client': 'key=value', 'url':'/'}
         r = requests.post(url, data=json.dumps(payload))
