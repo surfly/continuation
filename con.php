@@ -3,7 +3,7 @@
 define('SECRET_KEY', 's');
 define('SECRET_16_CHARS', 'deepheemae5eeGh5');
 define('ENCRYPTION_METHOD', "AES-256-CBC");
-define('DB_FILENAME', 'path-to-db');
+define('DB_FILENAME', '/tmp/path-to-db');
 define('DB_TABLE', 'continue');
 
 # http://www.php.net/manual/en/function.http-get-request-body.php#77305
@@ -27,10 +27,30 @@ function array_items($tab) {
 }
 
 function create_table($db) {
-    $db->exec('CREATE TABLE '.DB_TABLE.' ('
+    $db->exec('CREATE TABLE IF NOT EXISTS '.DB_TABLE.' ('
         .'shortcut VARCHAR(10), '
-        .'link TEXT, '
+        .'url TEXT, '
         .'creation_time DATETIME)');
+}
+
+# http://stackoverflow.com/a/14043346/3576976
+function random_string($length=10) {
+    return substr(sha1(rand()), 0, $length);
+}
+
+function save_url($db, $shortcut, $url, $time) {
+    $stmt = $db->prepare('INSERT INTO '.DB_TABLE
+        .' VALUES (?, ?, ?)');
+    $res = $stmt->execute(array($shortcut, $url, $time));
+}
+
+function retrieve_url($db, $shortcut) {
+    $query = 'SELECT url, creation_time FROM '.DB_TABLE
+        .' WHERE shortcut=?';
+    $stmt = $db->prepare($query);
+    $stmt->execute(array($shortcut));
+
+    return $stmt->fetch(PDO::FETCH_NUM);
 }
 
 function get_key_value($cookiestr) {
@@ -88,7 +108,7 @@ function save_cookies($data, $cookies) {
     return $data;
 }
 
-function post_url() {
+function post_url($db) {
     $time = time();
     $data = json_decode(get_request_body(), true);
 
@@ -100,21 +120,30 @@ function post_url() {
 
     $data = save_cookies($data, array_items($_COOKIE));
 
-    $encrypted = encrypt(SECRET_KEY.$time,
-        json_encode($data));
+    $encoded = json_encode($data);
 
-    echo json_encode('?text='.urlencode($encrypted).'&t='.$time);
+    $shortcut = random_string();
+    save_url($db, $shortcut, $encoded, $time);
+
+    echo json_encode('?text='.$shortcut);
 }
 
-function get_url($encrypted_data, $time) {
+function get_url($db, $shortcut) {
+    list($json_data, $time) = retrieve_url($db, $shortcut);
+
+    if($json_data === NULL) {
+        set_response_code(403, "Forbidden");
+        echo "Incorrect key";
+        return;
+    }
+
     if(!$time || (time() - $time > 15)) {
         set_response_code(403, "Forbidden");
         echo "URL expired.";
         return;
     }
 
-    $data = json_decode(decrypt(SECRET_KEY.$time,
-            $encrypted_data), true);
+    $data = json_decode($json_data, true);
 
     if($data === NULL) {
         set_response_code(403, "Forbidden");
@@ -136,15 +165,17 @@ function get_url($encrypted_data, $time) {
 
 # http://stackoverflow.com/questions/2413991/php-equivalent-of-pythons-name-main
 if(!count(debug_backtrace())) {
+    $db = new PDO("sqlite:".DB_FILENAME);
+    create_table($db);
     if(array_key_exists("text", $_GET)) {
         if(array_key_exists("t", $_GET)) {
             $time = $_GET["t"];
         } else {
             $time = NULL;
         }
-        get_url($_GET["text"], $time);
+        get_url($db, $_GET["text"]);
     } else {
-        post_url();
+        post_url($db);
     }
 }
 

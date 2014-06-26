@@ -60,6 +60,26 @@ class ContinueTest extends PHPUnit_Framework_TestCase {
         $this->assertContains(array("key2", "value_from_header"), $data["httponly"]);
         $this->assertContains(array("key1", "value1"), $data["client"]);
     }
+
+    public function testSaveUrl()
+    {
+        save_url($this->db, "green", "apple", time());
+        $count = 0;
+        $stmt = $this->db->query('SELECT * FROM '.DB_TABLE);
+        $this->assertSame(count($stmt->fetchAll()), 1);
+    }
+
+    public function testRetrieveUrl()
+    {
+        $time = time();
+        $this->db->exec('INSERT INTO '.DB_TABLE
+            .' VALUES ("green", "apple", time())');
+        list($url, $time) = retrieve_url($this->db, 'green');
+        $this->assertSame($url, 'apple');
+
+        list($url, $time) = retrieve_url($this->db, 'red');
+        $this->assertSame($url, Null);
+    }
 };
 
 ?>

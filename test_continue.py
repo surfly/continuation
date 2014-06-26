@@ -17,17 +17,11 @@ class TestContinuation(unittest.TestCase):
         payload = {'client': 'data'}
         r = requests.post(url, data=json.dumps(payload))
         self.assertEqual(r.status_code, 200)
+        print(r.text)
 
     def test_incorrect_get(self):
         r = requests.get(url + "?text=bla")
-        self.assertEqual(r.text, "URL expired.")
-        self.assertEqual(r.status_code, 403)
-
-    def test_expired_get(self):
-        # be sure that the clocks are synchronized
-        cur_time = str(time.time()-120)
-        r = requests.get(url + "?text=Oota7ood&t=" + cur_time)
-        self.assertEqual(r.text, "URL expired.")
+        self.assertEqual(r.text, "Incorrect key")
         self.assertEqual(r.status_code, 403)
 
     def test_correct_get(self):
