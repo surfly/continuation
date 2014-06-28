@@ -39,25 +39,32 @@ function random_string($length=10) {
 }
 
 function save_url($db, $shortcut, $url, $time) {
-    $stmt = $db->prepare('INSERT INTO '.DB_TABLE
+    $_SESSION["shortcut"] = $shortcut;
+    $_SESSION["url"] = $url;
+    $_SESSION["time"] = $time;
+/*    $stmt = $db->prepare('INSERT INTO '.DB_TABLE
         .' VALUES (?, ?, ?)');
-    $res = $stmt->execute(array($shortcut, $url, $time));
+    $res = $stmt->execute(array($shortcut, $url, $time));*/
 }
 
 function retrieve_url($db, $shortcut) {
-    $query = 'SELECT url, creation_time FROM '.DB_TABLE
+/*    $query = 'SELECT url, creation_time FROM '.DB_TABLE
         .' WHERE shortcut=?';
     $stmt = $db->prepare($query);
     $stmt->execute(array($shortcut));
 
-    return $stmt->fetch(PDO::FETCH_NUM);
+    return $stmt->fetch(PDO::FETCH_NUM);*/
+    if(!isset($_SESSION["url"]) || !isset($_SESSION["time"]))
+        return array(NULL, NULL);
+    return array($_SESSION["url"], $_SESSION["time"]);
 }
 
 function delete_url($db, $shortcut) {
-    $query = 'DELETE FROM '.DB_TABLE.' WHERE '
+/*    $query = 'DELETE FROM '.DB_TABLE.' WHERE '
         .'shortcut=?';
     $stmt = $db->prepare($query);
-    $stmt->execute(array($shortcut));
+    $stmt->execute(array($shortcut));*/
+    session_destroy();
 }
 
 function get_key_value($cookiestr) {
@@ -118,7 +125,9 @@ function post_url($db) {
     $shortcut = random_string();
     save_url($db, $shortcut, $encoded, $time);
 
-    echo json_encode('?text='.$shortcut);
+    //echo json_encode('?text='.$shortcut);
+    $url = '?text='.session_id();
+    echo json_encode($url);
 }
 
 function get_url($db, $shortcut) {
@@ -159,8 +168,17 @@ function get_url($db, $shortcut) {
 
 # http://stackoverflow.com/questions/2413991/php-equivalent-of-pythons-name-main
 if(!count(debug_backtrace())) {
-    $db = new PDO("sqlite:".DB_FILENAME);
-    create_table($db);
+    ini_set("session.use_cookies",0);
+    ini_set("session.use_trans_sid",1);
+    if(array_key_exists("text", $_GET))
+        session_id($_GET['text']);
+    session_start();
+
+    //print_r($_SESSION);
+
+    //$db = new PDO("sqlite:".DB_FILENAME);
+    $db = NULL;
+    //create_table($db);
     if(array_key_exists("text", $_GET)) {
         if(array_key_exists("t", $_GET)) {
             $time = $_GET["t"];
