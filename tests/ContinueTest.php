@@ -42,7 +42,7 @@ class ContinueTest extends PHPUnit_Framework_TestCase {
     public function testSaveUrl()
     {
         $time = time();
-        save_url(NULL, "green", "apple", $time);
+        save_url("apple", $time);
         $this->assertSame($_SESSION["url"], "apple");
         $this->assertSame($_SESSION["time"], $time);
     }
@@ -53,7 +53,7 @@ class ContinueTest extends PHPUnit_Framework_TestCase {
         $_SESSION["url"] = "apple";
         $_SESSION["time"] = time();
 
-        list($rurl, $rtime) = retrieve_url(NULL, NULL);
+        list($rurl, $rtime) = retrieve_url();
 
         $this->assertSame($rurl, "apple");
         $this->assertSame($time, $time);

@@ -38,19 +38,18 @@ function random_string($length=10) {
     return substr(sha1(rand()), 0, $length);
 }
 
-function save_url($db, $shortcut, $url, $time) {
-    $_SESSION["shortcut"] = $shortcut;
+function save_url($url, $time) {
     $_SESSION["url"] = $url;
     $_SESSION["time"] = $time;
 }
 
-function retrieve_url($db, $shortcut) {
+function retrieve_url() {
     if(!isset($_SESSION["url"]) || !isset($_SESSION["time"]))
         return array(NULL, NULL);
     return array($_SESSION["url"], $_SESSION["time"]);
 }
 
-function delete_url($db, $shortcut) {
+function delete_url() {
     session_destroy();
 }
 
@@ -95,7 +94,7 @@ function save_cookies($data, $cookies) {
     return $data;
 }
 
-function post_url($db) {
+function post_url() {
     $time = time();
     $data = json_decode(get_request_body(), true);
 
@@ -109,16 +108,15 @@ function post_url($db) {
 
     $encoded = json_encode($data);
 
-    $shortcut = random_string();
-    save_url($db, $shortcut, $encoded, $time);
+    save_url($encoded, $time);
 
     $url = '?text='.session_id();
     echo json_encode($url);
 }
 
-function get_url($db, $shortcut) {
-    list($json_data, $time) = retrieve_url($db, $shortcut);
-    delete_url($db, $shortcut);
+function get_url() {
+    list($json_data, $time) = retrieve_url();
+    delete_url();
 
     if($json_data === NULL) {
         set_response_code(403, "Forbidden");
@@ -160,16 +158,15 @@ if(!count(debug_backtrace())) {
         session_id($_GET['text']);
     session_start();
 
-    $db = NULL;
     if(array_key_exists("text", $_GET)) {
         if(array_key_exists("t", $_GET)) {
             $time = $_GET["t"];
         } else {
             $time = NULL;
         }
-        get_url($db, $_GET["text"]);
+        get_url($_GET["text"]);
     } else {
-        post_url($db);
+        post_url();
     }
 }
 
