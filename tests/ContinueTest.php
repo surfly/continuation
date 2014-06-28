@@ -3,21 +3,6 @@
 require_once("con.php");
 
 class ContinueTest extends PHPUnit_Framework_TestCase {
-    /*public function setUp()
-    {
-        $this->db = new PDO("sqlite::memory:");
-        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        create_table($this->db);
-    }
-    public function testCreateTable()
-    {
-        $res = $this->db->query('SELECT * FROM '.DB_TABLE);
-        $this->assertSame($res->rowCount(), 0);
-    }*/
-    public function setUp()
-    {
-    }
-
     public function testGetKeyValue()
     {
         $this->assertEquals(get_key_value("asdf"), array("", "asdf"));
@@ -54,41 +39,6 @@ class ContinueTest extends PHPUnit_Framework_TestCase {
         $this->assertContains(array("key1", "value1"), $data["client"]);
     }
 
-    /*public function testSaveUrl()
-    {
-        save_url($this->db, "green", "apple", time());
-        $stmt = $this->db->query('SELECT * FROM '.DB_TABLE);
-        $this->assertSame(count($stmt->fetchAll()), 1);
-    }
-
-    public function testSaveUrlUniqueness() 
-    {
-        save_url($this->db, "green", "apple", time());
-        $this->setExpectedException("PDOException");
-        save_url($this->db, "green", "apple", time());
-    }
-
-    public function testRetrieveUrl()
-    {
-        $time = time();
-        $this->db->exec('INSERT INTO '.DB_TABLE
-            .' VALUES ("green", "apple", time())');
-        list($url, $time) = retrieve_url($this->db, 'green');
-        $this->assertSame($url, 'apple');
-
-        list($url, $time) = retrieve_url($this->db, 'red');
-        $this->assertSame($url, Null);
-    }
-
-    public function testDeleteUrl()
-    {
-        $this->db->exec('INSERT INTO '.DB_TABLE
-            .' VALUES ("green", "apple", time())');
-        delete_url($this->db, "green");
-        $stmt = $this->db->query('SELECT * FROM '.DB_TABLE);
-        $this->assertSame(count($stmt->fetchAll()), 0);
-    }*/
-
     public function testSaveUrl()
     {
         $time = time();
@@ -108,17 +58,6 @@ class ContinueTest extends PHPUnit_Framework_TestCase {
         $this->assertSame($rurl, "apple");
         $this->assertSame($time, $time);
     }
-
-    /*
-    // code below won't work
-    // http://stackoverflow.com/questions/3050137/using-phpunit-to-test-cookies-and-sessions-how
-    public function testDeleteUrl()
-    {
-        $_SESSION["color"] = "red";
-        delete_url(NULL, NULL);
-        $this->assertArrayNotHasKey("color", $_SESSION);
-    }
-    */
 };
 
 ?>
