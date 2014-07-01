@@ -17,7 +17,6 @@ class TestContinuation(unittest.TestCase):
         payload = {'client': 'data'}
         r = requests.post(url, data=json.dumps(payload))
         self.assertEqual(r.status_code, 200)
-        print(r.text)
 
     def test_incorrect_get(self):
         r = requests.get(url + "?text=bla")
@@ -46,7 +45,6 @@ class TestContinuation(unittest.TestCase):
         new_args = [ 'text=badmsg' if s.startswith('text=') else s \
             for s in args]
         new_postfix = '&'.join(new_args)
-        print(new_postfix)
         r = requests.get(url + '?' + new_postfix, allow_redirects=False)
         self.assertEqual(r.status_code, 403)
         self.assertEqual(r.text, 'Incorrect key')

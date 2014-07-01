@@ -1,11 +1,5 @@
 <?php
 
-define('SECRET_KEY', 's');
-define('SECRET_16_CHARS', 'deepheemae5eeGh5');
-define('ENCRYPTION_METHOD', "AES-256-CBC");
-define('DB_FILENAME', '/tmp/path-to-db');
-define('DB_TABLE', 'continue');
-
 # http://www.php.net/manual/en/function.http-get-request-body.php#77305
 function get_request_body() {
     $body = @file_get_contents('php://input');
@@ -24,18 +18,6 @@ function array_items($tab) {
         $items[] = array($key, $value);
     }
     return $items;
-}
-
-function create_table($db) {
-    $db->exec('CREATE TABLE IF NOT EXISTS '.DB_TABLE.' ('
-        .'shortcut VARCHAR(10) unique primary key, '
-        .'url TEXT, '
-        .'creation_time DATETIME)');
-}
-
-# http://stackoverflow.com/a/14043346/3576976
-function random_string($length=10) {
-    return substr(sha1(rand()), 0, $length);
 }
 
 function save_url($url, $time) {
@@ -150,24 +132,16 @@ function get_url() {
     }
 }
 
-# http://stackoverflow.com/questions/2413991/php-equivalent-of-pythons-name-main
-if(!count(debug_backtrace())) {
-    ini_set("session.use_cookies",0);
-    ini_set("session.use_trans_sid",1);
-    if(array_key_exists("text", $_GET))
-        session_id($_GET['text']);
-    session_start();
+ini_set("session.use_cookies",0);
+ini_set("session.use_trans_sid",1);
+if(array_key_exists("text", $_GET))
+    session_id($_GET['text']);
+session_start();
 
-    if(array_key_exists("text", $_GET)) {
-        if(array_key_exists("t", $_GET)) {
-            $time = $_GET["t"];
-        } else {
-            $time = NULL;
-        }
-        get_url($_GET["text"]);
-    } else {
-        post_url();
-    }
+if(array_key_exists("text", $_GET)) {
+    get_url($_GET["text"]);
+} else {
+    post_url();
 }
 
 ?>
